@@ -1,0 +1,20 @@
+                ┌───────────────────────┐
+                │     Mac / Laptop      │
+                │  • Dev & dashboard UI │
+                │  • Agent control      │
+                └─────────┬─────────────┘
+                          │ Wi-Fi / LAN
+                ┌─────────┴─────────────-┐
+                │ NVIDIA Jetson Orin Nano│
+                │  • Core LLM inference  │
+                │  • Vector DB (Qdrant)  │
+                │  • RAG + automation    │
+                │  • GPU accelerated     │
+                └─────────┬─────────────-┘
+                          │
+                ┌─────────┴─────────────┐
+                │   Raspberry Pi 5      │
+                │  • Voice I/O (wake)   │
+                │  • Local STT/TTS      │
+                │  • Home/work triggers │
+                └──────────────────────-┘
