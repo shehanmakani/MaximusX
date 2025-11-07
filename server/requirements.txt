@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+torch==2.5.0
+transformers
+accelerate
+bitsandbytes
+qdrant-client
+langchain
+pydantic
+python-dotenv
