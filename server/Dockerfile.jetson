@@ -1,0 +1,16 @@
+# Optimized for NVIDIA Jetson Orin Nano (ARM64 + CUDA)
+FROM nvcr.io/nvidia/l4t-pytorch:r36.2.0-pth2.5-py3
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN apt-get update && apt-get install -y build-essential git
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+COPY app/ ./app
+
+ENV PYTHONUNBUFFERED=1
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+CMD ["python3", "-m", "app.main"]
