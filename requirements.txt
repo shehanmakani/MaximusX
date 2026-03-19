@@ -1,0 +1,38 @@
+# ═══════════════════════════════════════════════════════════
+#  Maximus-X Sentinel — Python Dependencies
+# ═══════════════════════════════════════════════════════════
+
+# API server
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+
+# Agent orchestration (LangGraph replaces raw LangChain for agents)
+langgraph>=0.2.0
+langchain-core>=0.3.0
+langchain-ollama>=0.2.0          # Ollama-specific LC integration
+langchain-qdrant>=0.2.0          # Qdrant vector store integration
+
+# LLM / embeddings
+# NOTE: torch is provided by dustynv base image — do NOT reinstall
+# torch==2.5.0                   # ← REMOVED: conflicts with base image torch
+transformers>=4.45.0
+accelerate>=1.0.0
+# bitsandbytes                   # ← REMOVED: Ollama handles quantization natively
+
+# Voice / STT (Pi-side, also available here for server transcription)
+faster-whisper>=1.1.0            # CTranslate2 backend, 3x faster than raw Whisper
+
+# Vector DB
+qdrant-client>=1.13.0
+
+# Context Membrane ingestion
+watchdog>=4.0.0                  # File system watching for doc auto-ingest
+schedule>=1.2.0                  # Cron-style scheduler
+pypdf>=4.0.0                     # PDF ingestion
+python-docx>=1.1.0               # DOCX ingestion
+html2text>=2024.2.26             # Email HTML → text
+
+# Utilities
+pydantic>=2.9.0
+python-dotenv>=1.0.0
+httpx>=0.27.0                    # Async HTTP (Home Assistant, Calendar APIs)

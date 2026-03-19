@@ -1,0 +1,82 @@
+# ═══════════════════════════════════════════════════════════
+#  Maximus-X Sentinel — OpenClaw Configuration
+#  Place this at: ~/.openclaw/config.yaml  (on your Mac)
+#
+#  OpenClaw acts as the messaging gateway — it receives messages
+#  from WhatsApp, Telegram, Signal, Discord, iMessage and
+#  forwards them to the Jetson FastAPI agent via webhook.
+# ═══════════════════════════════════════════════════════════
+
+gateway:
+  token: "${OPENCLAW_TOKEN}"           # set in .env
+  port: 3001
+
+# ── LLM backend ───────────────────────────────────────────
+# We override OpenClaw's default LLM with our Jetson agent
+ai:
+  provider: custom
+  endpoint: "http://${JETSON_IP}:8000/chat"    # Your Jetson's local IP
+  # OpenClaw will POST { "message": "...", "channel": "...", "user_id": "..." }
+  # and expect { "reply": "..." }
+
+# ── Channels to enable ────────────────────────────────────
+channels:
+  telegram:
+    enabled: true
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+
+  whatsapp:
+    enabled: false                     # enable when ready
+    # See: https://docs.openclaw.ai/channels/whatsapp
+
+  signal:
+    enabled: false
+    # Requires signal-cli running locally
+
+  discord:
+    enabled: true
+    bot_token: "${DISCORD_BOT_TOKEN}"
+    guild_id: "${DISCORD_GUILD_ID}"
+
+  macos:
+    enabled: true                      # Native macOS menu bar access
+
+# ── Memory ────────────────────────────────────────────────
+# OpenClaw's own memory layer (stored as local Markdown on Mac)
+# This is SEPARATE from Qdrant Context Membrane — it captures
+# preferences, persona, conversation style
+memory:
+  enabled: true
+  path: "~/.openclaw/memory"
+  auto_summarize: true
+
+# ── Skills ────────────────────────────────────────────────
+# Custom skills that extend OpenClaw's capabilities
+skills:
+  - name: maximus-relay
+    path: "./openclaw-skills/maximus-relay"   # Routes to Jetson
+  - name: chembiz-context
+    path: "./openclaw-skills/chembiz-context" # Auto-loads chem domain priming
+  - name: nightly-digest
+    path: "./openclaw-skills/nightly-digest"  # 7am morning briefing cron
+
+# ── Persona ───────────────────────────────────────────────
+persona:
+  name: Maximus
+  description: |
+    You are Maximus, a private personal AI assistant for Shehan — 
+    a chemical engineer and entrepreneur. You are direct, intelligent, 
+    and action-oriented. You prefer short answers unless detail is 
+    explicitly requested. You have deep context on ChemRich Global, 
+    ChemeNova LLC, and IntelliForm™. You run fully locally — no cloud, 
+    no data leaves this machine.
+  language: en
+  timezone: "America/New_York"
+
+# ── Security ──────────────────────────────────────────────
+security:
+  allowed_user_ids:
+    - "${YOUR_TELEGRAM_USER_ID}"       # Only respond to you
+    - "${BROTHER_TELEGRAM_USER_ID}"    # Co-developer
+  require_auth: true
+  rotate_token_days: 30

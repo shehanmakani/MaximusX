@@ -1,15 +1,63 @@
 version: "3.8"
 
+# ═══════════════════════════════════════════════════════════
+#  Maximus-X Sentinel — Docker Compose
+#  Runs on: NVIDIA Jetson Orin Nano (JetPack 6.4+, ARM64)
+# ═══════════════════════════════════════════════════════════
+
 services:
+
+  # ── Core LLM inference (Jetson-native, GPU-accel) ────────
+  ollama:
+    image: dustynv/ollama:r36.4.0          # Jetson-optimized, replaces generic ollama:latest
+    runtime: nvidia
+    restart: unless-stopped
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_MODELS=/ollama/models
+    volumes:
+      - ollama_data:/ollama/models
+    ports:
+      - "11434:11434"
+    shm_size: "8gb"                        # Prevents OOM on model load
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ── Vector DB / RAG / Context Membrane ───────────────────
+  qdrant:
+    image: qdrant/qdrant:v1.13.0-arm64    # Updated from v1.3.0
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"                        # gRPC port (faster bulk ingest)
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+  # ── FastAPI Agent Server (LangGraph supervisor) ───────────
   server:
     build:
       context: ./server
       dockerfile: Dockerfile.jetson
+    restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       - VECTOR_DB_URL=http://qdrant:6333
-      - MODEL_HOST=http://localhost:11434
+      - MODEL_HOST=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b}
+      - HOME_ASSISTANT_URL=${HOME_ASSISTANT_URL:-}
+      - HOME_ASSISTANT_TOKEN=${HOME_ASSISTANT_TOKEN:-}
+      - GOOGLE_CALENDAR_CREDS=${GOOGLE_CALENDAR_CREDS:-}
     deploy:
       resources:
         reservations:
@@ -18,22 +66,50 @@ services:
     runtime: nvidia
     volumes:
       - ./server/models:/app/models
+      - ./server/skills:/app/skills        # OpenClaw skill definitions
+      - ./context_membrane:/app/memory     # Nightly ingested docs
+    depends_on:
+      ollama:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
 
-  qdrant:
-    image: qdrant/qdrant:v1.3.0-arm64
+  # ── Open WebUI — Mac dashboard ────────────────────────────
+  # Access at: http://jetson-ip:3000
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:cuda
+    restart: unless-stopped
     ports:
-      - "6333:6333"
+      - "3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-change-me-in-env}
+      - DEFAULT_MODELS=llama3.2:3b
     volumes:
-      - qdrant_data:/qdrant/storage
+      - open_webui_data:/app/backend/data
+    depends_on:
+      - ollama
 
-  ollama:
-    image: ollama/ollama:latest
-    runtime: nvidia
+  # ── Context Membrane Ingestion Service ───────────────────
+  # Cron-style service: ingests notes/emails/docs into Qdrant nightly
+  context-ingest:
+    build:
+      context: ./context_membrane
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - VECTOR_DB_URL=http://qdrant:6333
+      - INGEST_SOURCES=${INGEST_SOURCES:-/data/notes,/data/emails}
+      - INGEST_SCHEDULE=${INGEST_SCHEDULE:-0 2 * * *}     # 2am nightly
     volumes:
-      - ollama_data:/root/.ollama
-    ports:
-      - "11434:11434"
+      - ./context_membrane/data:/data
+      - context_membrane_state:/app/state
+    depends_on:
+      qdrant:
+        condition: service_healthy
 
 volumes:
   qdrant_data:
   ollama_data:
+  open_webui_data:
+  context_membrane_state:
