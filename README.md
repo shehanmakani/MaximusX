@@ -145,6 +145,11 @@ python3 voice_edge.py
 
 ---
 
+ SSH Key Exchange: Ensure your Pi 5 can SSH into the Jetson without a password:
+ssh-copy-id shehan@192.168.1.100
+
+ Ngrok Setup: On the Pi, run ngrok http 5000. Copy the URL into the Twilio Console under "Sandbox Settings" > "When a message comes in."
+
 ## Privacy Guarantee
 
 - Zero cloud inference — all LLM calls stay on Jetson
