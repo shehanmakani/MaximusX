@@ -106,6 +106,69 @@ pip install -r requirements.txt
 python3 voice_edge.py
 ```
 
+### Autonomous twin starter
+This repo now includes a local self-prompting loop that uses `future-self-emulator`
+to rank likely next actions from calendar and repo context, then stages the winning
+task for approval instead of executing it blindly.
+
+```bash
+python3 self_prompting_agent.py \
+  --profile "Shehan: founder, engineer, builder" \
+  --calendar sample_calendar.json \
+  --repo .
+```
+
+That writes a staged task into `autonomous_outputs/task_<timestamp>.json`.
+
+Approve a staged task locally:
+
+```bash
+python3 approve_task.py <task_id>
+```
+
+Or through the WhatsApp gateway:
+
+- `GO` → generate the latest predicted task
+- `STATUS` → show the latest pending task
+- `APPROVE <task_id>` → execute the allowlisted action
+
+### Sleep mode workflow
+This repo also includes a first pass at the overnight clone workflow:
+
+1. Log daytime activity and repo state:
+```bash
+python3 activity_logger.py --repo .
+python3 activity_logger.py --event-type meeting_prep --summary "Prepared architecture notes before the IntelliForm sync"
+```
+
+2. Enter sleep mode before bed:
+```bash
+python3 sleep_mode.py \
+  --profile "Shehan: founder, engineer, builder" \
+  --calendar sample_calendar.json \
+  --repo . \
+  --cycles 2
+```
+
+3. Wake up and review the digest:
+```bash
+python3 wake_mode.py
+python3 morning_digest.py --json
+```
+
+Core files:
+- `activity_logger.py` captures daytime behavior into `memory/activity_log.jsonl`
+- `pattern_model.py` learns recurring priorities from those events
+- `reasoning_loop.py` critiques and ranks options using strategic, practical, protective, and identity lenses
+- `overnight_planner.py` converts those patterns into a ranked overnight task queue
+- `sleep_mode.py` stages tasks while you are "asleep"
+- `wake_mode.py` gives you the morning approval summary
+
+Important design note:
+This system should not just copy previous behavior. The newer overnight flow now includes
+a reasoning loop so it can adapt when priorities change, critique its own options, and prefer
+work that matches both current context and the user's style rather than blindly repeating patterns.
+
 ---
 
 ## Agent Specializations

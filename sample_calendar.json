@@ -1,0 +1,20 @@
+[
+  {
+    "title": "IntelliForm architecture sync",
+    "start": "2026-04-24T08:00:00",
+    "description": "Review the autonomous twin architecture and open implementation questions.",
+    "prep_task": "Draft the briefing for the IntelliForm architecture sync",
+    "impact": 0.95,
+    "effort": 0.45,
+    "risk": 0.2
+  },
+  {
+    "title": "ChemRich follow-up round",
+    "start": "2026-04-24T11:30:00",
+    "description": "Prepare outreach notes and prioritized follow-ups for current leads.",
+    "prep_task": "Prepare ChemRich follow-up notes and next actions",
+    "impact": 0.82,
+    "effort": 0.35,
+    "risk": 0.25
+  }
+]
