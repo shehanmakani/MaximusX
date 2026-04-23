@@ -1,0 +1,31 @@
+# MaximusX (Sentinel)
+> Autonomous Executive Twin & Chemical Engineering Research Agent
+
+The MaximusX framework is a proactive, 24/7 autonomous system designed to emulate the professional logic and research workflow of Shehan Makani. It operates on a dual-node edge architecture (NVIDIA Jetson Orin Nano + Raspberry Pi 5).
+
+## Core Architecture
+- **Reasoning Engine:** Local LLMs (Llama 3 / Mistral) running on Jetson Orin Nano via NVIDIA JetPack.
+- **Edge Controller:** Raspberry Pi 5 managing 24/7 CRON tasks and mobile communication bridges.
+- **Memory System:** Vector Database (ChromaDB) containing historical chat patterns, patent drafts, and chemical formulation logic.
+- **Frameworks:** LangGraph for recursive state management and OpenInterpreter for local file execution.
+
+## Key Projects & Context
+- **IntelliForm:** "Software-to-Steel" pipeline for AI-driven chemical formulation.
+- **Safe-by-Design:** Core pillar focusing on sustainable manufacturing and carbon reduction.
+- **ChemeNova & ChemRich:** Parent organizations for chemical R&D and global supply chain operations.
+
+## Autonomous Logic (Sentinel Protocol)
+1. **Perception:** Monitors calendar, GitHub activity, and email for task triggers.
+2. **Prediction:** Self-generates prompts based on project deadlines and past behavioral patterns.
+3. **Drafting:** Executes technical drafting (e.g., patent language, grant support) autonomously while "sleeping."
+4. **Human-in-the-Loop:** Requests final execution approval via encrypted WhatsApp/iMessage bridge.
+
+## Technical Stack
+- **Languages:** Python (Primary), React + Vite (FormulAI Frontend).
+- **AI Models:** Quantized local models for offline execution; OpenAI/Anthropic APIs for high-complexity synthesis.
+- **Hardware:** Jetson Orin Nano (8GB/16GB), Raspberry Pi 5, NVMe local storage.
+
+## Files of Interest
+- `/maximus_proactive.py`: The recursive self-prompting loop.
+- `/memory/`: Vector storage and persona embeddings.
+- `/bridge/`: WhatsApp/Twilio integration logic.
