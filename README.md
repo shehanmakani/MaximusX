@@ -151,3 +151,7 @@ python3 voice_edge.py
 - OpenClaw stores config/memory as local Markdown on your Mac
 - Qdrant vector data stays on Jetson NVMe
 - Only outbound: your chosen messaging app (Telegram, etc.) for delivery
+
+  ---
+### 🔮 Also Check Out
+If you're interested in decision intelligence, check out [Future-Self-Emulator](https://github.com/shehanmakani/future-self-emulator) — an AI system that simulates multiple life-path versions of yourself using Agentic AI.
