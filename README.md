@@ -2,7 +2,7 @@
 > *A private, GPU-accelerated personal AI brain. Nobody else has built this.*
 
 A fully local, multi-agent personal AI assistant running on **NVIDIA Jetson Orin Nano** with **Raspberry Pi 5** voice edge and **Mac** dashboard. Combines **OpenClaw** multi-channel messaging gateway, **LangGraph** agent orchestration, **Qdrant** vector memory, and **Ollama** inference — all on-premise, zero cloud, zero subscription.
-
+![Architecture](./maximus_x_sentinel_architecture.svg)
 ---
 
 ## What Makes This Different
